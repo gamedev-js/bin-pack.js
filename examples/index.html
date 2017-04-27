@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Example: Bin Pack</title>
+    <style>
+      body {
+        text-align: center;
+
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h2 {
+        color: #09f;
+        margin: 10px 0px;
+      }
+
+      .buttons {
+        display: flex;
+        flex-direction: row;
+        margin: 10px 0px;
+      }
+
+      .buttons > * {
+        margin: 0px 5px;
+      }
+
+      .container {
+        position: relative;
+        border: 1px solid #09f;
+        box-sizing: border-box;
+      }
+
+      .box {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10px;
+        font-weight: bold;
+
+        position: absolute;
+        background: #333;
+        color: #888;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+    <script src="../dist/bin-pack.dev.js"></script>
+  </head>
+
+  <body>
+    <h2>bin pack</h2>
+
+    <div class="buttons">
+      <select id="algorithm">
+        <option>simple</option>
+        <option>tree</option>
+        <option>max-rect</option>
+      </select>
+      <button id="pack">Pack</button>
+    </div>
+
+    <div class="buttons">
+      <input id="numRects" value="30" placeholder="Number of Rects"></input>
+      <button id="generate">Generate</button>
+    </div>
+
+    <div class="container" style="width: 512px; height: 512px;"></div>
+
+    <script>
+      'use strict';
+
+      let algorithmEL = document.getElementById('algorithm');
+      let packEL = document.getElementById('pack');
+      let numRectsEL = document.getElementById('numRects');
+      let generateEL = document.getElementById('generate');
+      let containerEL = document.querySelector('.container');
+
+      let nodes = [];
+
+      function randomRange (min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      function generate (number) {
+        let nodes = new Array(number);
+        for (let i = 0; i < nodes.length; ++i) {
+          nodes[i] = {
+            id: `node_${i}`,
+            x: 0,
+            y: 0,
+            width: randomRange(20, 100),
+            height: randomRange(20, 100),
+            rotated: false,
+          };
+        }
+
+        return nodes;
+      }
+
+      nodes = generate(parseInt(numRectsEL.value));
+
+      generateEL.addEventListener('click', event => {
+        event.stopPropagation();
+        nodes = generate(parseInt(numRectsEL.value));
+      });
+
+      packEL.addEventListener('click', event => {
+        event.stopPropagation();
+
+        binpack.sort(nodes, 'height', 'descending', true);
+        binpack.pack(nodes, algorithmEL.value, 512, 512, 2, true, (i, total, id) => {
+          console.log(i, total, id);
+        });
+
+        // clear child
+        // <div class="box" style="left: 2px; top: 2px; width: 80px; height: 40px;">80 x 40</div>
+        while ( containerEL.firstChild ) {
+          containerEL.removeChild(containerEL.firstChild);
+        }
+        nodes.forEach(node => {
+          let div = document.createElement('div');
+          div.classList.add('box');
+          div.style.left = `${node.x}px`;
+          div.style.top = `${node.y}px`;
+          if (node.rotated) {
+            div.style.backgroundColor = '#555';
+            div.style.width = `${node.height}px`;
+            div.style.height = `${node.width}px`;
+          } else {
+            div.style.width = `${node.width}px`;
+            div.style.height = `${node.height}px`;
+          }
+          div.innerText = `${node.width.toFixed(1)} x ${node.height.toFixed(1)}`;
+
+          containerEL.appendChild(div);
+        });
+
+      });
+
+    </script>
+  </body>
+</html>
