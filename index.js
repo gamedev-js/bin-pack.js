@@ -1,5 +1,6 @@
-import SimplePacker from './lib/simple';
-import TreePacker from './lib/tree';
+import simple_pack from './lib/simple';
+import tree_pack from './lib/tree';
+import max_rect_pack from './lib/max-rect';
 
 // ==================
 // sort
@@ -74,15 +75,17 @@ function _compareByRotateHeight(a, b) {
 }
 
 function _pack(nodes, algorithm, width, height, padding, allowRotate, progress) {
-  let packer = null;
+  let pack = null;
 
   if (algorithm === 'simple') {
-    packer = new SimplePacker();
+    pack = simple_pack;
   } else if (algorithm === 'tree') {
-    packer = new TreePacker();
+    pack = tree_pack;
+  } else if (algorithm === 'max-rect') {
+    pack = max_rect_pack;
   }
 
-  return packer.pack(nodes, width, height, padding, allowRotate, progress);
+  return pack(nodes, width, height, padding, allowRotate, progress);
 }
 
 export default {

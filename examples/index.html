@@ -31,8 +31,8 @@
 
       .container {
         position: relative;
-        border: 1px solid #09f;
-        box-sizing: border-box;
+        border: 5px solid #09f;
+        box-sizing: content-box;
       }
 
       .box {
@@ -93,8 +93,8 @@
             id: `node_${i}`,
             x: 0,
             y: 0,
-            width: randomRange(20, 100),
-            height: randomRange(20, 100),
+            width: Math.floor(randomRange(20, 100)),
+            height: Math.floor(randomRange(20, 100)),
             rotated: false,
           };
         }
@@ -135,7 +135,7 @@
             div.style.width = `${node.width}px`;
             div.style.height = `${node.height}px`;
           }
-          div.innerText = `${node.width.toFixed(1)} x ${node.height.toFixed(1)}`;
+          div.innerText = `${node.width} x ${node.height}`;
 
           containerEL.appendChild(div);
         });
