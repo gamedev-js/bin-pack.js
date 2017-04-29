@@ -1,6 +1,6 @@
 
 /*
- * bin-pack.js v1.0.0
+ * bin-pack.js v1.0.1
  * (c) 2017 @Johnny Wu
  * Released under the MIT License.
  */
@@ -234,22 +234,24 @@ function _scoreRect(freeRects, width, height, allowRotate, scores) {
 
 function _splitFreeNode(freeRects, freeNode, usedNode) {
   // Test with SAT if the rectangles even intersect.
-  if (usedNode.x >= freeNode.x + freeNode.width || usedNode.x + usedNode.width <= freeNode.x ||
-    usedNode.y >= freeNode.y + freeNode.height || usedNode.y + usedNode.height <= freeNode.y)
+  if (
+    usedNode.x >= freeNode.x + freeNode.width || usedNode.x + usedNode.width <= freeNode.x ||
+    usedNode.y >= freeNode.y + freeNode.height || usedNode.y + usedNode.height <= freeNode.y
+  ) {
     return false;
+  }
 
-  let newNode;
   if (usedNode.x < freeNode.x + freeNode.width && usedNode.x + usedNode.width > freeNode.x) {
     // New node at the top side of the used node.
     if (usedNode.y > freeNode.y && usedNode.y < freeNode.y + freeNode.height) {
-      newNode = _cloneRect(freeNode);
+      let newNode = _cloneRect(freeNode);
       newNode.height = usedNode.y - newNode.y;
       freeRects.push(newNode);
     }
 
     // New node at the bottom side of the used node.
     if (usedNode.y + usedNode.height < freeNode.y + freeNode.height) {
-      newNode = _cloneRect(freeNode);
+      let newNode = _cloneRect(freeNode);
       newNode.y = usedNode.y + usedNode.height;
       newNode.height = freeNode.y + freeNode.height - (usedNode.y + usedNode.height);
       freeRects.push(newNode);
@@ -259,14 +261,14 @@ function _splitFreeNode(freeRects, freeNode, usedNode) {
   if (usedNode.y < freeNode.y + freeNode.height && usedNode.y + usedNode.height > freeNode.y) {
     // New node at the left side of the used node.
     if (usedNode.x > freeNode.x && usedNode.x < freeNode.x + freeNode.width) {
-      newNode = _cloneRect(freeNode);
+      let newNode = _cloneRect(freeNode);
       newNode.width = usedNode.x - newNode.x;
       freeRects.push(newNode);
     }
 
     // New node at the right side of the used node.
     if (usedNode.x + usedNode.width < freeNode.x + freeNode.width) {
-      newNode = _cloneRect(freeNode);
+      let newNode = _cloneRect(freeNode);
       newNode.x = usedNode.x + usedNode.width;
       newNode.width = freeNode.x + freeNode.width - (usedNode.x + usedNode.width);
       freeRects.push(newNode);
@@ -277,14 +279,22 @@ function _splitFreeNode(freeRects, freeNode, usedNode) {
 }
 
 function _placeRect(freeRects, rect) {
-  for (let i = 0; i < freeRects.length; ++i) {
+  // NOTE: in _splitFreeNode, the number of freeRects will increase,
+  // we need to pre-cache the current number of rects.
+  let len = freeRects.length;
+  for (let i = 0; i < len; ++i) {
     if (_splitFreeNode(freeRects, freeRects[i], rect)) {
       freeRects.splice(i, 1);
       --i;
+      --len;
     }
   }
 
-  // cleanUpFreeRects
+  // clean up
+  _pruneFreeRects(freeRects);
+}
+
+function _pruneFreeRects(freeRects) {
   for (let i = 0; i < freeRects.length; ++i) {
     for (let j = i + 1; j < freeRects.length; ++j) {
       if (_containsRect(freeRects[j], freeRects[i])) {

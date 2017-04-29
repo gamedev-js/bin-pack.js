@@ -27,6 +27,16 @@ npm install bin-pack.js
 
 ### packAutoResize (nodes, algorithm, width, height, padding, allowRotate, progress)
 
+## Reference
+
+  - [RectangleBinPack](https://github.com/juj/RectangleBinPack)
+    - [RectangleBinPack.pdf](http://clb.demon.fi/files/RectangleBinPack.pdf)
+    - [rectangle-bin-packing](http://clb.demon.fi/projects/rectangle-bin-packing)
+    - [more-rectangle-bin-packing](http://clb.demon.fi/projects/more-rectangle-bin-packing)
+    - [even-more-rectangle-bin-packing](http://clb.demon.fi/projects/even-more-rectangle-bin-packing)
+  - [bin-packing](https://github.com/jakesgordon/bin-packing)
+  - [bin-pack](https://github.com/armollica/bin-pack)
+
 ## License
 
 MIT © 2017 Johnny Wu
