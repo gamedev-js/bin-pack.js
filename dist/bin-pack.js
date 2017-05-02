@@ -1,6 +1,6 @@
 
 /*
- * bin-pack.js v1.0.1
+ * bin-pack.js v1.0.2
  * (c) 2017 @Johnny Wu
  * Released under the MIT License.
  */
@@ -380,7 +380,7 @@ var max_rect_pack = function(nodes, width, height, padding, allowRotate, progres
 function _compareByWidth(a, b) {
   let ret = a.width - b.width;
   if (ret === 0) {
-    ret = a.id.localeCompare(b.id);
+    ret = _compareByID(a,b);
   }
   return ret;
 }
@@ -388,7 +388,7 @@ function _compareByWidth(a, b) {
 function _compareByHeight(a, b) {
   let ret = a.height - b.height;
   if (ret === 0) {
-    ret = a.id.localeCompare(b.id);
+    ret = _compareByID(a,b);
   }
   return ret;
 }
@@ -396,16 +396,19 @@ function _compareByHeight(a, b) {
 function _compareByArea(a, b) {
   let ret = a.width * a.height - b.width * b.height;
   if (ret === 0) {
-    ret = a.id.localeCompare(b.id);
+    ret = _compareByID(a,b);
   }
   return ret;
 }
 
 function _compareByID(a, b) {
-  return a.id.localeCompare(b.id);
+  if (typeof a.id === 'string') {
+    return a.id.localeCompare(b.id);
+  }
+  return a.id - b.id;
 }
 
-function _compareByRotateWidth(a, b) {
+function _compareByRotatedWidth(a, b) {
   let a_size = a.width;
   if (a.height > a.width) {
     a_size = a.height;
@@ -425,7 +428,7 @@ function _compareByRotateWidth(a, b) {
   return ret;
 }
 
-function _compareByRotateHeight(a, b) {
+function _compareByRotatedHeight(a, b) {
   let a_size = a.height;
   if (a.width > a.height) {
     a_size = a.width;
@@ -475,9 +478,9 @@ var index = {
 
     // sort by
     if (sortBy === 'width') {
-      nodes.sort(allowRotate ? _compareByRotateWidth : _compareByWidth);
+      nodes.sort(allowRotate ? _compareByRotatedWidth : _compareByWidth);
     } else if (sortBy === 'height') {
-      nodes.sort(allowRotate ? _compareByRotateHeight : _compareByHeight);
+      nodes.sort(allowRotate ? _compareByRotatedHeight : _compareByHeight);
     } else if (sortBy === 'area') {
       nodes.sort(_compareByArea);
     } else {

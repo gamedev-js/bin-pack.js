@@ -1,6 +1,6 @@
 {
   "name": "bin-pack.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "2d rectangular bin packing in javascript",
   "main": "dist/bin-pack.js",
   "scripts": {
